@@ -41,13 +41,13 @@ export const App = () => {
       <div className={styles.controls}>
         <input
           type="text"
-          placeholder="Поиск"
+          placeholder="Search in todos"
           value={searchPhrase}
           onChange={handleSearchChange}
         />
-        <button onClick={handleSearchChange}>Поиск</button>
+        <button onClick={handleSearchChange}>Search</button>
         <button onClick={handleSortToggle}>
-          {sorted ? "Сортировка выключена" : "Сортировка по алфавиту"}
+          {sorted ? "Sorting off" : "A - Z Sorting"}
         </button>
       </div>
       {isLoading ? (
