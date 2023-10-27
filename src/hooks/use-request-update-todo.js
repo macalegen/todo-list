@@ -1,27 +1,27 @@
 import { useState } from "react";
+import { ref, set } from "firebase/database";
+import { db } from "../firebase";
 
-export const useRequestUpdateTodo = (refreshTodos) => {
+export const useRequestUpdateTodo = (setIsLoading) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const requestUpdateTodo = () => {
+    setIsLoading(true);
     setIsUpdating(true);
 
-    fetch("http://localhost:3001/todos/1", {
-      method: "PUT",
-      headers: { "Content-type": "application/json;charset=utf-8" },
-      body: JSON.stringify({
-        title: "New todo updated",
-      }),
+    const todoDbRef = ref(db, "todos/1");
+
+    set(todoDbRef, {
+      title: "New todo updated",
     })
-      .then((rawResponce) => rawResponce.json())
       .then((response) => {
-        console.log("Todo updated, server pesponse:", response);
-        refreshTodos();
+        console.log("Todo updated, server responce:", response);
       })
-      .finally(() => setIsUpdating(false));
+      .finally(() => {
+        setIsLoading(false);
+        setIsUpdating(false);
+      });
   };
-  return {
-    isUpdating,
-    requestUpdateTodo,
-  };
+
+  return { requestUpdateTodo, isUpdating };
 };

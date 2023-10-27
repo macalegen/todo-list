@@ -1,5 +1,6 @@
 import styles from "./app.module.css";
 import { useState } from "react";
+import debounce from "lodash/debounce";
 import {
   useRequestGetTodos,
   useRequestAddTodo,
@@ -11,15 +12,21 @@ export const App = () => {
   const refreshTodos = () => setRefreshTodosFlag(!refreshTodosFlag);
   const [refreshTodosFlag, setRefreshTodosFlag] = useState(false);
 
-  const { isLoading, todos } = useRequestGetTodos(refreshTodosFlag);
-  const { isCreating, requestAddTodo } = useRequestAddTodo(refreshTodos);
+  const { isLoading, todos } = useRequestGetTodos();
+  const { isCreating, requestAddTodo, newTodo, setNewTodo } =
+    useRequestAddTodo(refreshTodos);
   const { isUpdating, requestUpdateTodo } = useRequestUpdateTodo(refreshTodos);
   const { isDeleting, requestDeleteTodo } = useRequestDeleteTodo(refreshTodos);
   const [searchPhrase, setSearchPhrase] = useState("");
   const [sorted, setSorted] = useState(false);
 
+  const debouncedSearch = debounce((searchText) => {
+    setSearchPhrase(searchText);
+  }, 300);
+
   const handleSearchChange = (e) => {
-    setSearchPhrase(e.target.value);
+    const searchText = e.target.value;
+    debouncedSearch(searchText);
   };
 
   const handleSortToggle = () => {
@@ -53,12 +60,18 @@ export const App = () => {
       {isLoading ? (
         <div className={styles.loader}></div>
       ) : (
-        filteredTodos.map(({ id, title }) => (
+        Object.entries(filteredTodos).map(([id, { title }]) => (
           <div key={id} className={styles.todos}>
             {title}
           </div>
         ))
       )}
+      <input
+        type="text"
+        placeholder="New todo"
+        value={newTodo}
+        onChange={(e) => setNewTodo(e.target.value)}
+      />
       <button disabled={isCreating} onClick={requestAddTodo}>
         Add Todo
       </button>
@@ -71,118 +84,3 @@ export const App = () => {
     </div>
   );
 };
-
-// import styles from "./app.module.css";
-// import { useRequestGetTodos } from "./hooks/use-request-get-todos.js";
-// import { useState } from "react";
-
-// export const App = () => {
-//   const { isLoading, setTodos, todos, updateTodos } = useRequestGetTodos();
-//   const [searchPhrase, setSearchPhrase] = useState("");
-//   const [sorted, setSorted] = useState(false);
-
-//   const handleAddTodo = () => {
-//     const newTodo = {
-//       id: Date.now(),
-//       title: "Новое дело",
-//     };
-
-//     fetch("http://localhost:3001/todos", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(newTodo),
-//     })
-//       .then((response) => response.json())
-//       .then((createdTodo) => {
-//         updateTodos(createdTodo);
-//       })
-//       .catch((error) => {
-//         console.error("Error adding todo:", error);
-//       });
-//   };
-//   const handleUpdateTodo = (id, updatedTitle) => {
-//     const updatedTodos = todos.map((todo) => {
-//       if (todo.id === id) {
-//         return {
-//           ...todo,
-//           title: updatedTitle,
-//         };
-//       }
-//       return todo;
-//     });
-
-//     fetch(`http://localhost:3001/todos/${id}`, {
-//       method: "PUT",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ title: updatedTitle }),
-//     })
-//       .then((response) => response.json())
-//       .then(() => {
-//         setTodos(updatedTodos);
-//       });
-//   };
-
-//   const handleDeleteTodo = (id) => {
-//     fetch(`http://localhost:3001/todos/${id}`, {
-//       method: "DELETE",
-//     }).then(() => {
-//       const updatedTodos = todos.filter((todo) => todo.id !== id);
-//       setTodos(updatedTodos);
-//     });
-//   };
-
-//   const handleSearchChange = (e) => {
-//     setSearchPhrase(e.target.value);
-//   };
-
-//   const handleSortToggle = () => {
-//     setSorted(!sorted);
-//   };
-
-//   const filteredTodos = Array.isArray(<link>todos</link>)
-//     ? (<link>todos</link>).filter(
-//         (todo) =>
-//           todo.title &&
-//           todo.title.toLowerCase().includes(searchPhrase.toLowerCase())
-//       )
-//     : [];
-
-//   const sortedTodos = sorted
-//     ? [...filteredTodos].sort((a, b) => a.title.localeCompare(b.title))
-//     : filteredTodos;
-
-//   return (
-//     <div className={styles.app}>
-//       <div className={styles.controls}>
-//         <input
-//           type="text"
-//           placeholder="Поиск"
-//           value={searchPhrase}
-//           onChange={handleSearchChange}
-//         />
-//         <button onClick={handleSortToggle}>
-//           {sorted ? "Сортировка выключена" : "Сортировка по алфавиту"}
-//         </button>
-//         <button onClick={handleAddTodo}>Добавить дело</button>
-//       </div>
-
-//       {isLoading ? (
-//         <div className={styles.loader}></div>
-//       ) : (
-//         sortedTodos.map(({ id, title }) => (
-//           <div key={id} className={styles.todos}>
-//             {title}
-//             <button onClick={() => handleUpdateTodo(id, "Обновленное дело")}>
-//               Обновить
-//             </button>
-//             <button onClick={() => handleDeleteTodo(id)}>Удалить</button>
-//           </div>
-//         ))
-//       )}
-//     </div>
-//   );
-// };
