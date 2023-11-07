@@ -2,25 +2,24 @@ import { useState } from "react";
 import { ref, push } from "firebase/database";
 import { db } from "../firebase";
 
-export const useRequestAddTodo = (refreshTodos) => {
+export const useRequestAddTodo = () => {
   const [isCreating, setIsCreating] = useState(false);
-  const [newTodo, setNewTodo] = useState("");
 
-  const requestAddTodo = () => {
+  const requestAddTodo = (title) => {
     setIsCreating(true);
 
     const todosDbRef = ref(db, "todos");
 
     push(todosDbRef, {
-      title: newTodo,
+      title: title,
     })
       .then((response) => {
-        console.log("Todo added, server response:", response);
-        setNewTodo("");
-        refreshTodos();
+        console.log("Todo added, server pesponse:", response);
       })
       .finally(() => setIsCreating(false));
   };
-
-  return { requestAddTodo, isCreating, newTodo, setNewTodo };
+  return {
+    isCreating,
+    requestAddTodo,
+  };
 };

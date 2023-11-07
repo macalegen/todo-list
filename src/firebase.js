@@ -9,7 +9,7 @@ const firebaseConfig = {
   messagingSenderId: "99603926470",
   appId: "1:99603926470:web:4d83bf8aeb26e57f28b6c7",
   databaseURL:
-    "https://todo-list-9fbb5-default-rtdb.europe-west1.firebasedatabase.app/",
+    "https://todoproject-f6545-default-rtdb.europe-west1.firebasedatabase.app/",
 };
 
 const app = initializeApp(firebaseConfig);

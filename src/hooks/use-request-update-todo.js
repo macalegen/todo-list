@@ -2,26 +2,24 @@ import { useState } from "react";
 import { ref, set } from "firebase/database";
 import { db } from "../firebase";
 
-export const useRequestUpdateTodo = (setIsLoading) => {
+export const useRequestUpdateTodo = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const requestUpdateTodo = () => {
-    setIsLoading(true);
+  const requestUpdateTodo = (id, updatedTitle) => {
     setIsUpdating(true);
 
-    const todoDbRef = ref(db, "todos/1");
+    const todosDbRef = ref(db, `todos/${id}`);
 
-    set(todoDbRef, {
-      title: "New todo updated",
+    set(todosDbRef, {
+      title: updatedTitle,
     })
       .then((response) => {
-        console.log("Todo updated, server responce:", response);
+        console.log("Todo updated, server pesponse:", response);
       })
-      .finally(() => {
-        setIsLoading(false);
-        setIsUpdating(false);
-      });
+      .finally(() => setIsUpdating(false));
   };
-
-  return { requestUpdateTodo, isUpdating };
+  return {
+    isUpdating,
+    requestUpdateTodo,
+  };
 };

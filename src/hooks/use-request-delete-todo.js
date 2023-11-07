@@ -2,24 +2,22 @@ import { useState } from "react";
 import { ref, remove } from "firebase/database";
 import { db } from "../firebase";
 
-export const useRequestDeleteTodo = (setIsLoading) => {
+export const useRequestDeleteTodo = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const requestDeleteTodo = () => {
-    setIsLoading(true);
+  const requestDeleteTodo = (id) => {
     setIsDeleting(true);
 
-    const todoDbRef = ref(db, "todos/1");
+    const todosDbRef = ref(db, `todos/${id}`);
 
-    remove(todoDbRef)
+    remove(todosDbRef)
       .then((response) => {
-        console.log("Todo deleted, server responce", response);
+        console.log("Todo deleted, server pesponse:", response);
       })
-      .finally(() => {
-        setIsLoading(false);
-        setIsDeleting(false);
-      });
+      .finally(() => setIsDeleting(false));
   };
-
-  return { requestDeleteTodo, isDeleting };
+  return {
+    isDeleting,
+    requestDeleteTodo,
+  };
 };

@@ -1,19 +1,13 @@
 {
     "todos": {
       "1": {
-      "userId": 1,
-      "title": "delectus aut autem",
-      "completed": false
+      "title": "delectus aut autem"
     },
     "2": {
-      "userId": 1,
-      "title": "quis ut nam facilis et officia qui",
-      "completed": false
+      "title": "quis ut nam facilis et officia qui"
     },
     "3": {
-      "userId": 1,
-      "title": "fugiat veniam minus",
-      "completed": false
+      "title": "fugiat veniam minus"
     }
   }
 }

@@ -10,14 +10,16 @@ export const useRequestGetTodos = () => {
     const todosDbRef = ref(db, "todos");
 
     return onValue(todosDbRef, (snapshot) => {
-      const loadedTodos = snapshot.val() || {};
-      setTodos(Object.values(loadedTodos));
+      const loadedTodos = Object.entries(snapshot.val() || {}).map(
+        ([id, data]) => ({
+          id,
+          title: data.title,
+        })
+      );
+      setTodos(loadedTodos);
       setIsLoading(false);
     });
   }, []);
 
-  return {
-    isLoading,
-    todos,
-  };
+  return { todos, isLoading };
 };
